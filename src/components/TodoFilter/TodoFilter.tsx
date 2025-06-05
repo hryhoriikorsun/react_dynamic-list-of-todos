@@ -4,13 +4,13 @@ import { Select } from '../../types/Select';
 interface TodoFilterProps {
   search: string;
   onChangeInput: (v: string) => void;
-  chuseStatus: (v: Select) => void;
+  chooseStatus: (v: Select) => void;
 }
 
 export const TodoFilter: React.FC<TodoFilterProps> = ({
   search,
   onChangeInput = () => {},
-  chuseStatus = () => {},
+  chooseStatus = () => {},
 }) => {
   return (
     <form className="field has-addons">
@@ -18,7 +18,7 @@ export const TodoFilter: React.FC<TodoFilterProps> = ({
         <span className="select">
           <select
             data-cy="statusSelect"
-            onChange={event => chuseStatus(event.target.value)}
+            onChange={event => chooseStatus(event.target.value as Select)}
           >
             <option value={Select.All}>All</option>
             <option value={Select.Active}>Active</option>

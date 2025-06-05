@@ -20,10 +20,10 @@ const prepareTodo = (todos: Todo[], filter: Filter): Todo[] => {
   let preparedTodo = [...todos];
 
   if (filter.search !== '') {
-    const normalizeSerch = filter.search.trim().toLowerCase();
+    const normalizeSearch = filter.search.trim().toLowerCase();
 
     preparedTodo = todos.filter(todo =>
-      todo.title.toLowerCase().includes(normalizeSerch),
+      todo.title.toLowerCase().includes(normalizeSearch),
     );
   }
 
@@ -56,7 +56,7 @@ export const App: React.FC = () => {
     });
   }, []);
 
-  const vifibleTodos = prepareTodo(todos, { search, select });
+  const visibleTodos = prepareTodo(todos, { search, select });
 
   return (
     <>
@@ -69,14 +69,14 @@ export const App: React.FC = () => {
               <TodoFilter
                 search={search}
                 onChangeInput={setSearch}
-                chuseStatus={setSelect}
+                chooseStatus={setSelect}
               />
             </div>
 
             <div className="block">
               {loaded ? (
                 <TodoList
-                  todos={vifibleTodos}
+                  todos={visibleTodos}
                   onClickSetUserId={setUserId}
                   onClickSetTodo={setTodo}
                   oneTodoForCheck={todo}

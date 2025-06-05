@@ -15,7 +15,7 @@ export const TodoList: React.FC<TodoListProps> = ({
   onClickSetTodo = () => {},
   oneTodoForCheck,
 }) => {
-  const hendleShowModalWindow = (userId: number, todo: Todo) => {
+  const handleShowModalWindow = (userId: number, todo: Todo) => {
     return onClickSetUserId(userId), onClickSetTodo(todo);
   };
 
@@ -66,7 +66,7 @@ export const TodoList: React.FC<TodoListProps> = ({
                   data-cy="selectButton"
                   className="button"
                   type="button"
-                  onClick={() => hendleShowModalWindow(+todo.userId, todo)}
+                  onClick={() => handleShowModalWindow(+todo.userId, todo)}
                 >
                   <span className="icon">
                     <i
