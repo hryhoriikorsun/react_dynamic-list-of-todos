@@ -9,54 +9,62 @@ import { TodoModal } from './components/TodoModal';
 import { Loader } from './components/Loader';
 import { getTodos } from './api';
 import { Todo } from './types/Todo';
-import { Select } from './types/Select';
+import { SelectStatusTodos } from './types/SelectStatusTodos';
 
-interface Filter {
-  search: string;
-  select: Select;
+interface FilterTodos {
+  searchByTitle: string;
+  selectStatusTodos: SelectStatusTodos;
 }
 
-const prepareTodo = (todos: Todo[], filter: Filter): Todo[] => {
-  let preparedTodo = [...todos];
+const prepareTodos = (todos: Todo[], filter: FilterTodos): Todo[] => {
+  let preparedTodos = [...todos];
 
-  if (filter.search !== '') {
-    const normalizeSearch = filter.search.trim().toLowerCase();
+  if (filter.searchByTitle !== '') {
+    const normalizeSearch = filter.searchByTitle.trim().toLowerCase();
 
-    preparedTodo = todos.filter(todo =>
+    preparedTodos = todos.filter(todo =>
       todo.title.toLowerCase().includes(normalizeSearch),
     );
   }
 
-  if (filter.select === Select.Active) {
-    preparedTodo = preparedTodo.filter(todo => todo.completed === false);
+  switch (filter.selectStatusTodos) {
+    case SelectStatusTodos.Active:
+      preparedTodos = preparedTodos.filter(todo => todo.completed === false);
+      break;
+    case SelectStatusTodos.Completed:
+      preparedTodos = preparedTodos.filter(todo => todo.completed);
+      break;
   }
 
-  if (filter.select === Select.Completed) {
-    preparedTodo = preparedTodo.filter(todo => todo.completed === true);
-  }
-
-  return preparedTodo;
+  return preparedTodos;
 };
 
 export const App: React.FC = () => {
-  const [loaded, setLoaded] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [todos, setTodos] = useState<Todo[]>([]);
 
   const [userId, setUserId] = useState(0);
   const [todo, setTodo] = useState<Todo | null>(null);
 
-  const [search, setSearch] = useState('');
-  const [select, setSelect] = useState(Select.All);
+  const [searchByTitle, setSearchByTitle] = useState('');
+  const [selectStatusTodos, setSelectStatusTodos] = useState(
+    SelectStatusTodos.All,
+  );
 
   useEffect(() => {
-    getTodos().then(todosFromServer => {
-      setLoaded(true);
-      setTodos(todosFromServer);
-    });
+    getTodos()
+      .then(setTodos)
+      .catch(error => {
+        throw new Error(error);
+      })
+      .finally(() => setIsLoading(false));
   }, []);
 
-  const visibleTodos = prepareTodo(todos, { search, select });
+  const visibleTodos = prepareTodos(todos, {
+    searchByTitle,
+    selectStatusTodos,
+  });
 
   return (
     <>
@@ -67,19 +75,19 @@ export const App: React.FC = () => {
 
             <div className="block">
               <TodoFilter
-                search={search}
-                onChangeInput={setSearch}
-                chooseStatus={setSelect}
+                search={searchByTitle}
+                onChangeInput={setSearchByTitle}
+                chooseStatus={setSelectStatusTodos}
               />
             </div>
 
             <div className="block">
-              {loaded ? (
+              {!isLoading ? (
                 <TodoList
                   todos={visibleTodos}
-                  onClickSetUserId={setUserId}
-                  onClickSetTodo={setTodo}
-                  oneTodoForCheck={todo}
+                  setSelectedUserId={setUserId}
+                  setSelectedTodo={setTodo}
+                  selectedTodo={todo}
                 />
               ) : (
                 <Loader />

@@ -7,22 +7,26 @@ import { Todo } from '../../types/Todo';
 interface TodoModalProps {
   userId: number;
   todo: Todo | null;
-  closeModalWindow: (v: Todo | null) => void;
+  closeModalWindow: (todo: Todo | null) => void;
 }
 
 export const TodoModal: React.FC<TodoModalProps> = ({
   userId,
   todo,
-  closeModalWindow = () => {},
+  closeModalWindow,
 }) => {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    getUser(userId).then(userFromServer => {
-      setLoading(false);
-      setUser(userFromServer);
-    });
+    getUser(userId)
+      .then(userFromServer => {
+        setUser(userFromServer);
+      })
+      .catch(error => {
+        throw new Error(error);
+      })
+      .finally(() => setLoading(false));
   }, [userId]);
 
   return (
